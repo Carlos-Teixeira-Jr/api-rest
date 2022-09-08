@@ -5,6 +5,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consumo de API</title>
+
+  <h2>Login</h2>
+  <input type="text" name="email" id="email" placeholder="***@gmail.com"><br>
+  <input type="text" name="password" id="password" placeholder="******">
+  <button onclick="login()">Entrar</button>
+
   <hr>
   <h4>Lista de games</h4>
   <ul id="games"></ul>
@@ -29,6 +35,36 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
+  let axiosConfig = {
+    headers: {
+    Authorization: "Bearer " + localStorage.getItem("token")
+    }
+  }
+
+  function login(){
+
+    
+
+    let emailField = document.getElementById("email");
+    let passwordField = document.getElementById("password");
+
+    let email = emailField.value;
+    let password = passwordField.value;
+
+    axios.post("http://localhost:8080/auth",{
+      email,
+      password
+    }).then(res => {
+      let token = res.data.token;
+      localStorage.setItem("token", token);
+      axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
+    }).catch(err => {
+      alert("Login incorreto!");
+    })
+  }
+
+  
+
   function createGame(){
     let titleInput = document.getElementById("title");
     let yearInput = document.getElementById("year");
@@ -40,7 +76,7 @@
       price: priceInput.value
     }
 
-    axios.post("http://localhost:8080/game", game).then(response =>{
+    axios.post("http://localhost:8080/game", game,axiosConfig).then(response =>{
 
       if(response.status == 200){
         alert("Game cadastrado")
@@ -55,7 +91,7 @@
   function deleteGame(listItem){
     let id = listItem.getAttribute("data-id");
 
-    axios.delete("http://localhost:8080/game/"+id).then(response => {
+    axios.delete("http://localhost:8080/game/"+id, axiosConfig).then(response => {
       alert("Game deletado!");
     }).catch(error => {
       console.log(error)
@@ -91,7 +127,7 @@
 
     let id = idInput.value;
 
-    axios.put("http://localhost:8080/game/"+id, game).then(response =>{
+    axios.put("http://localhost:8080/game/"+id, game,axiosConfig).then(response =>{
 
       if(response.status == 200){
         alert("Game atualizado")
@@ -102,7 +138,7 @@
     });
   }
   
-  axios.get("http://localhost:8080/games").then(response => {
+  axios.get("http://localhost:8080/games", axiosConfig).then(response => {
     let games = response.data;
     let list = document.getElementById("games");
 

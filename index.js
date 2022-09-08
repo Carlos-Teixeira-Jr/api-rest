@@ -76,7 +76,7 @@ let DB = {
 //REST - rota de listagem de todos os itens:
 app.get("/games", auth,(req,res)=>{//URL unifiorme e direta e método adequado para a finalidade da rota;
   res.statusCode = 200;//Retorna um código de estado da requisição;
-  res.json({user: req.loggedUser,games: DB.games});
+  res.json(DB.games);
 });
 
 //REST - rota de listagem de item individual;
